@@ -1,0 +1,20 @@
+### get_all_notes
+GET http://localhost:3001/api/notes/
+
+### get_one_note
+GET http://localhost:3001/api/notes/3
+
+### create_note
+POST http://localhost:3001/api/notes/
+content-type: application/json
+
+{
+  "content": "123333333",
+  "important": false
+}
+
+### delete_note
+DELETE http://localhost:3001/api/notes/1
+
+### get_unkown
+GET http://localhost:3001/x
