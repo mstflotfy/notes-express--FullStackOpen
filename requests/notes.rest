@@ -2,19 +2,28 @@
 GET http://localhost:3001/api/notes/
 
 ### get_one_note
-GET http://localhost:3001/api/notes/3
+GET http://localhost:3001/api/notes/6608a7591a6e62cb7f39c117
 
 ### create_note
 POST http://localhost:3001/api/notes/
 content-type: application/json
 
 {
-  "content": "123333333",
+  "content": "lol",
   "important": false
 }
 
 ### delete_note
-DELETE http://localhost:3001/api/notes/1
+DELETE http://localhost:3001/api/notes/660718e4ee8a1a4bcab5d7f6
+
+### update_note
+PUT http://localhost:3001/api/notes/66071c612b80a9fc2501af73
+content-type: application/json
+
+{
+  "content": "lol",
+  "important": true
+}
 
 ### get_unkown
 GET http://localhost:3001/x
