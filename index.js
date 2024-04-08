@@ -1,42 +1,15 @@
 require('dotenv').config()
-const express = require("express");
-const app = express();
+
+const express = require('express')
+const app = express()
 const cors = require('cors')
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 const Note = require('./models/note')
 
-// This part is moved into its own note module
-  /* if (process.argv.length < 4) {
-    console.log('use this format: npm run dev user pass')
-    process.exit(1)
-  }
-
-  const username = process.argv[2]
-  const password = process.argv[3]
-  const collection = 'noteApp'
-  const url =
-  `mongodb+srv://${username}:${password}@cluster0.cep1p6c.mongodb.net/${collection}?retryWrites=true&w=majority&appName=Cluster0`
-  mongoose.set('strictQuery', false)
-  mongoose.connect(url)
-  const noteSchema = new mongoose.Schema({
-    content: String,
-    important: Boolean
-  })
-  noteSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-      returnedObject.id = returnedObject._id.toString()
-      delete returnedObject._id
-      delete returnedObject.__v
-    }
-  })
-  const Note = mongoose.model('Note', noteSchema) */
-
-const generateId = () => {
-  const maxId = notes.length > 0
-    ? Math.max(...notes.map(n => n.id))
-    : 0
+/* const generateId = () => {
+  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0
   return maxId + 1
-}
+} */
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -46,31 +19,29 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-let notes = [
-];
+// let notes = []
 
 app.use(express.static('dist'))
 app.use(cors())
-app.use(express.json());
+app.use(express.json())
 app.use(requestLogger)
 
-app.get("/", (request, response) => {
-  response.send("<h1>Hello World!</h1>");
-});
+app.get('/', (request, response) => {
+  response.send('<h1>Hello World!</h1>')
+})
 
-app.get("/api/notes", (request, response, next) => {
+app.get('/api/notes', (request, response) => {
   // response.json(notes);
-  Note.find({}).then(notes => {
+  Note.find({}).then((notes) => {
     response.json(notes)
   })
-});
+})
 
-app.get("/api/notes/:id", (request, response) => {
+app.get('/api/notes/:id', (request, response, next) => {
   const id = request.params.id
 
-  Note
-    .findById(id)
-    .then(note => {
+  Note.findById(id)
+    .then((note) => {
       if (note) {
         response.json(note)
       } else {
@@ -78,32 +49,26 @@ app.get("/api/notes/:id", (request, response) => {
       }
     })
     .catch((e) => next(e))
-  })
+})
 
-
-app.delete("/api/notes/:id", (request, response, next) => {
+app.delete('/api/notes/:id', (request, response, next) => {
   // There's no consensus on what status code should be returned to a DELETE request if the resource does not exist. The only two options are 204 and 404. For the sake of simplicity, our application will respond with 204 in both cases.
   const id = request.params.id
 
-  Note
-    .findByIdAndDelete(id)
-    .then(deletedNote => {
+  Note.findByIdAndDelete(id)
+    .then((deletedNote) => {
       if (deletedNote) {
-        console.log(`Deleted: ${deletedNote}`);
-        response
-          .json(deletedNote)
-          .end()
-
+        console.log(`Deleted: ${deletedNote}`)
+        response.json(deletedNote).end()
       } else {
         console.log('note not found')
         response.json(204).end()
       }
     })
-    .catch((error) => next(error));
-});
+    .catch((error) => next(error))
+})
 
-
-app.post("/api/notes", (request, response, next) => {
+app.post('/api/notes', (request, response, next) => {
   const body = request.body
 
   const note = new Note({
@@ -111,12 +76,13 @@ app.post("/api/notes", (request, response, next) => {
     important: Boolean(body.important) || false,
   })
 
-  note.save()
-    .then(savedNote => {
-    response.json(savedNote)
-  })
-  .catch(error => next(error))
-});
+  note
+    .save()
+    .then((savedNote) => {
+      response.json(savedNote)
+    })
+    .catch((error) => next(error))
+})
 
 app.put('/api/notes/:id', (req, res, next) => {
   const body = req.body
@@ -124,26 +90,24 @@ app.put('/api/notes/:id', (req, res, next) => {
   const id = req.params.id
   const note = {
     content: body.content,
-    important: body.important
+    important: body.important,
   }
   const options = {
     new: true,
     runValidators: true,
-    context: 'query'
+    context: 'query',
   }
 
-  Note
-    .findByIdAndUpdate(id, note, options)
-    .then(updatedNote => {
+  Note.findByIdAndUpdate(id, note, options)
+    .then((updatedNote) => {
       res.json(updatedNote)
     })
-    .catch(e => next(e))
+    .catch((e) => next(e))
 })
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
-
 
 app.use(unknownEndpoint)
 
@@ -151,9 +115,9 @@ const errorHandler = (error, request, response, next) => {
   console.log(error.message)
 
   if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id'})
-  } else if (error.name = 'ValidationError') {
-    return response.status(400).json({error: error.message})
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if ((error.name === 'ValidationError')) {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
@@ -162,7 +126,7 @@ const errorHandler = (error, request, response, next) => {
 // this has to be the last loaded middleware, also all the routes should be registered before this!
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  console.log(`Server running on port ${PORT}`)
+})
